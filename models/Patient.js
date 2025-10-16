@@ -11,6 +11,7 @@ const patientSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
 
     // editable by patient
+    profilePic: { type: String, default: "" },
     bloodGroup: String,
     address: String,
     phone: String,

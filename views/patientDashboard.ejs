@@ -1,591 +1,620 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patient Dashboard - <%= user.name %></title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        .tab-active {
-            background-color: #1a202c;
-            color: white;
-            border-color: #1a202c;
-        }
-        .tab-inactive {
-            color: #4a5568;
-        }
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+
+      .tab-active {
+        background-color: #1a202c;
+        color: white;
+        border-color: #1a202c;
+      }
+
+      .tab-inactive {
+        color: #4a5568;
+      }
     </style>
-</head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 sm:p-6 lg:p-8">
+  </head>
 
+  <body
+    class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 sm:p-6 lg:p-8"
+  >
     <div class="max-w-7xl mx-auto">
-        <!-- Header with Dynamic User Info -->
-        <header class="mb-6">
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex items-center gap-4">
-                        <!-- User Avatar with Initials -->
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                            <%= user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() %>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-800">Welcome back, <%= user.name %>!</h1>
-                            <p class="text-gray-500 text-sm">Patient ID: <span class="font-semibold text-blue-600"><%= user.uid %></span></p>
-                            <p class="text-gray-500 text-sm"><%= user.email %></p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors">
-                            <i data-lucide="settings" class="w-4 h-4 mr-2"></i>
-                            Settings
-                        </button>
-                        <a href="/auth/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors">
-                            <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
-                            Logout
-                        </a>
-                    </div>
-                </div>
+      <header class="mb-6">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <% if (user.profilePic) { %>
+              <img
+                src="<%= user.profilePic %>"
+                alt="Profile Picture"
+                class="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+              />
+              <% } else { %>
+              <div
+                class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg"
+              >
+                <%= user.name.split(' ').map(n => n[0]).join('').substring(0,
+                2).toUpperCase() %>
+              </div>
+              <% } %>
+              <div>
+                <h1 class="text-2xl font-bold text-gray-800">
+                  Welcome back, <%= user.name %>!
+                </h1>
+                <p class="text-gray-500 text-sm">
+                  Patient ID:
+                  <span class="font-semibold text-blue-600"
+                    ><%= user.uid %></span
+                  >
+                </p>
+                <p class="text-gray-500 text-sm"><%= user.email %></p>
+              </div>
             </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <nav class="mb-6">
-            <div class="border-b border-gray-200 bg-white rounded-t-xl px-4">
-                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="dashboard-tabs">
-                    <li class="mr-2">
-                        <a href="#" class="inline-block p-4 border-b-2 rounded-t-lg tab-active" data-tab="overview">Overview</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive" data-tab="personal-info">Personal Info</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive" data-tab="timeline">Timeline</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive" data-tab="medications">Medications</a>
-                    </li>
-                    <li class="mr-2">
-                        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive" data-tab="hospitals">Find Hospitals</a>
-                    </li>
-                    <li>
-                        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive" data-tab="ai-assistant">AI Assistant</a>
-                    </li>
-                </ul>
+            <div class="flex items-center gap-3">
+              <button
+                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors"
+              >
+                <i data-lucide="settings" class="w-4 h-4 mr-2"></i> Settings
+              </button>
+              <a
+                href="/auth/logout"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors"
+              >
+                <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Logout
+              </a>
             </div>
-        </nav>
+          </div>
+        </div>
+      </header>
 
-        <!-- Main Content -->
-        <main id="dashboard-content">
+      <nav class="mb-6">
+        <div class="border-b border-gray-200 bg-white rounded-t-xl px-4">
+          <ul
+            class="flex flex-wrap -mb-px text-sm font-medium text-center"
+            id="dashboard-tabs"
+          >
+            <li class="mr-2">
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 rounded-t-lg tab-active"
+                data-tab="overview"
+                >Overview</a
+              >
+            </li>
+            <li class="mr-2">
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive"
+                data-tab="personal-info"
+                >Personal Info</a
+              >
+            </li>
+            <li class="mr-2">
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive"
+                data-tab="timeline"
+                >Timeline</a
+              >
+            </li>
+            <li class="mr-2">
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive"
+                data-tab="medications"
+                >Medications</a
+              >
+            </li>
+            <li class="mr-2">
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive"
+                data-tab="hospitals"
+                >Find Hospitals</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-inactive"
+                data-tab="ai-assistant"
+                >AI Assistant</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
 
-            <!-- Overview Section -->
-            <div id="overview" class="tab-panel">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Left Column: Patient Summary -->
-                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex items-center mb-4">
-                            <i data-lucide="user" class="w-6 h-6 text-blue-500 mr-3"></i>
-                            <h2 class="text-xl font-semibold text-gray-800">Patient Summary</h2>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-bold text-white shadow-lg">
-                                <%= user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() %>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900"><%= user.name %></h3>
-                                <p class="text-gray-500"><%= user.age || 'N/A' %> years • <%= user.gender || 'N/A' %></p>
-                            </div>
-                        </div>
-                        <div class="mt-6 space-y-3 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Patient ID:</span>
-                                <span class="font-medium text-blue-600"><%= user.uid %></span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Email:</span>
-                                <span class="font-medium text-gray-800 truncate ml-2"><%= user.email %></span>
-                            </div>
-                            <% if (user.medicalHistory) { %>
-                            <div>
-                                <p class="text-gray-500 mb-2">Medical History:</p>
-                                <p class="text-sm text-gray-700"><%= user.medicalHistory %></p>
-                            </div>
-                            <% } %>
-                            <% if (user.allergies) { %>
-                            <div>
-                                <p class="text-gray-500 mb-2">Known Allergies:</p>
-                                <div class="flex flex-wrap gap-2">
-                                    <% user.allergies.split(',').forEach(allergy => { %>
-                                        <span class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"><%= allergy.trim() %></span>
-                                    <% }); %>
-                                </div>
-                            </div>
-                            <% } else { %>
-                            <div>
-                                <p class="text-gray-500 mb-2">Known Allergies:</p>
-                                <p class="text-sm text-gray-400 italic">No allergies recorded</p>
-                            </div>
-                            <% } %>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Vitals (Keep existing vitals display) -->
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                        <div class="flex items-center mb-4">
-                            <i data-lucide="activity" class="w-6 h-6 text-green-500 mr-3"></i>
-                            <h2 class="text-xl font-semibold text-gray-800">Current Vitals & Health Metrics</h2>
-                        </div>
-                        <p class="text-gray-500 text-sm mb-6">Latest recorded measurements with trends</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <!-- Vitals Cards (keeping existing structure) -->
-                            <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="droplet" class="w-5 h-5 text-blue-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Blood Pressure</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">120/80</p>
-                                <p class="text-sm text-green-600 font-medium">+2%</p>
-                            </div>
-                             <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="heart-pulse" class="w-5 h-5 text-red-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Heart Rate</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">72 bpm</p>
-                                <p class="text-sm text-red-600 font-medium">-1%</p>
-                            </div>
-                             <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="droplets" class="w-5 h-5 text-purple-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Blood Sugar</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">110 mg/dL</p>
-                                <p class="text-sm text-red-600 font-medium">-5%</p>
-                            </div>
-                             <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="ruler" class="w-5 h-5 text-yellow-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Cholesterol</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">180 mg/dL</p>
-                                <p class="text-sm text-red-600 font-medium">-8%</p>
-                            </div>
-                             <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="thermometer" class="w-5 h-5 text-orange-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Body Temperature</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">98.6°F</p>
-                                <p class="text-sm text-gray-600 font-medium">0%</p>
-                            </div>
-                            <div class="border border-gray-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="flex items-center">
-                                        <i data-lucide="wind" class="w-5 h-5 text-cyan-500 mr-2"></i>
-                                        <span class="text-sm font-medium text-gray-700">Oxygen Saturation</span>
-                                    </div>
-                                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">normal</span>
-                                </div>
-                                <p class="text-xl font-bold text-gray-900">98%</p>
-                                <p class="text-sm text-green-600 font-medium">+1%</p>
-                            </div>
-                        </div>
-                    </div>
+      <main id="dashboard-content">
+        <div id="overview" class="tab-panel">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-md">
+              <div class="flex items-center mb-4">
+                <i data-lucide="user" class="w-6 h-6 text-blue-500 mr-3"></i>
+                <h2 class="text-xl font-semibold text-gray-800">
+                  Patient Summary
+                </h2>
+              </div>
+              <div class="flex items-center space-x-4">
+                <div
+                  class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-bold text-white shadow-lg"
+                >
+                  <%= user.name.split(' ').map(n => n[0]).join('').substring(0,
+                  2).toUpperCase() %>
                 </div>
-
-                <!-- Quick Actions (keeping existing structure) -->
-                <div class="mt-6 bg-white p-6 rounded-xl shadow-md">
-                    <div class="flex items-center mb-4">
-                        <i data-lucide="zap" class="w-6 h-6 text-yellow-500 mr-3"></i>
-                        <h2 class="text-xl font-semibold text-gray-800">Quick Actions & Alerts</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <div class="flex items-start">
-                                <i data-lucide="calendar" class="w-6 h-6 text-blue-600 mr-3 mt-1"></i>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Book Appointment</h3>
-                                    <p class="text-sm text-gray-600">Schedule your next check-up</p>
-                                    <button class="mt-2 text-sm font-medium text-blue-600 hover:underline">Book Now</button>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                            <div class="flex items-start">
-                                <i data-lucide="bell" class="w-6 h-6 text-orange-600 mr-3 mt-1"></i>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Set Reminders</h3>
-                                    <p class="text-sm text-gray-600">Medication & appointment alerts</p>
-                                    <button class="mt-2 text-sm font-medium text-orange-600 hover:underline">Configure</button>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                             <div class="flex items-start">
-                                <i data-lucide="upload" class="w-6 h-6 text-green-600 mr-3 mt-1"></i>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Upload Records</h3>
-                                    <p class="text-sm text-gray-600">Add medical documents</p>
-                                    <button class="mt-2 text-sm font-medium text-green-600 hover:underline">Upload</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                  <h3 class="font-bold text-lg text-gray-900">
+                    <%= user.name %>
+                  </h3>
+                  <p class="text-gray-500">
+                    <%= user.age || 'N/A' %> years • <%= user.gender || 'N/A' %>
+                  </p>
                 </div>
-            </div>
-            
-            <!-- Personal Info Section -->
-            <div id="personal-info" class="tab-panel hidden bg-white p-6 rounded-xl shadow-md">
-                 <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center">
-                        <i data-lucide="user-circle-2" class="w-6 h-6 text-blue-500 mr-3"></i>
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800">Personal Information</h2>
-                            <p class="text-sm text-gray-500">Manage your personal details and medical information</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="edit-info-btn" class="bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-gray-700">
-                            <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i> <span id="edit-btn-text">Edit Info</span>
-                        </button>
-                        <button id="save-info-btn" class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-green-700 hidden">
-                            <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Changes
-                        </button>
-                        <button id="cancel-edit-btn" class="bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-red-700 hidden">
-                            <i data-lucide="x" class="w-4 h-4 mr-2"></i> Cancel
-                        </button>
-                    </div>
+              </div>
+              <div class="mt-6 space-y-3 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Patient ID:</span>
+                  <span class="font-medium text-blue-600"><%= user.uid %></span>
                 </div>
-                
-                <!-- Success/Error Messages -->
-                <div id="update-message" class="hidden mb-4 p-3 rounded-lg">
-                    <div class="flex items-center">
-                        <i id="message-icon" class="w-5 h-5 mr-2"></i>
-                        <span id="message-text"></span>
-                    </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Email:</span>
+                  <span class="font-medium text-gray-800 truncate ml-2"
+                    ><%= user.email %></span
+                  >
                 </div>
-                
-                <form id="patient-update-form">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Basic Info -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Basic Information</h3>
-                            <div class="space-y-4 text-sm">
-                                <div class="grid grid-cols-3 gap-2">
-                                    <span class="text-gray-500">Full Name</span>
-                                    <span class="col-span-2 font-medium text-gray-800"><%= user.name %></span>
-                                </div>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <span class="text-gray-500">Patient ID</span>
-                                    <span class="col-span-2 font-medium text-blue-600"><%= user.uid %></span>
-                                </div>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <span class="text-gray-500">Email</span>
-                                    <span class="col-span-2 font-medium text-gray-800"><%= user.email %></span>
-                                </div>
-                                <% if (user.age) { %>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <span class="text-gray-500">Age</span>
-                                    <span class="col-span-2 font-medium text-gray-800"><%= user.age %> years</span>
-                                </div>
-                                <% } %>
-                                <% if (user.gender) { %>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <span class="text-gray-500">Gender</span>
-                                    <span class="col-span-2 font-medium text-gray-800"><%= user.gender %></span>
-                                </div>
-                                <% } %>
-                                
-                                <!-- Editable Fields -->
-                                <div class="grid grid-cols-3 gap-2 items-center">
-                                    <label class="text-gray-500">Blood Group</label>
-                                    <div class="col-span-2">
-                                        <span class="display-field font-medium text-gray-800"><%= user.bloodGroup || 'Not specified' %></span>
-                                        <select name="bloodGroup" class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="">Select Blood Group</option>
-                                            <option value="A+" <% if (user.bloodGroup === 'A+') { %>selected<% } %>>A+</option>
-                                            <option value="A-" <% if (user.bloodGroup === 'A-') { %>selected<% } %>>A-</option>
-                                            <option value="B+" <% if (user.bloodGroup === 'B+') { %>selected<% } %>>B+</option>
-                                            <option value="B-" <% if (user.bloodGroup === 'B-') { %>selected<% } %>>B-</option>
-                                            <option value="AB+" <% if (user.bloodGroup === 'AB+') { %>selected<% } %>>AB+</option>
-                                            <option value="AB-" <% if (user.bloodGroup === 'AB-') { %>selected<% } %>>AB-</option>
-                                            <option value="O+" <% if (user.bloodGroup === 'O+') { %>selected<% } %>>O+</option>
-                                            <option value="O-" <% if (user.bloodGroup === 'O-') { %>selected<% } %>>O-</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-3 gap-2 items-center">
-                                    <label class="text-gray-500">Phone</label>
-                                    <div class="col-span-2">
-                                        <span class="display-field font-medium text-gray-800"><%= user.phone || 'Not specified' %></span>
-                                        <input type="tel" name="phone" value="<%= user.phone || '' %>" class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter phone number">
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-3 gap-2 items-start">
-                                    <label class="text-gray-500 mt-2">Address</label>
-                                    <div class="col-span-2">
-                                        <span class="display-field font-medium text-gray-800"><%= user.address || 'Not specified' %></span>
-                                        <textarea name="address" class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20 resize-none" placeholder="Enter your address"><%= user.address || '' %></textarea>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-3 gap-2 items-start">
-                                    <label class="text-gray-500 mt-2">Emergency Contact</label>
-                                    <div class="col-span-2">
-                                        <div class="display-field font-medium text-gray-800">
-                                            <% if (user.emergencyContact && user.emergencyContact.phone) { %>
-                                                <div class="text-sm">
-                                                    <p><strong><%= user.emergencyContact.name || 'N/A' %></strong></p>
-                                                    <p class="text-gray-600"><%= user.emergencyContact.relation || 'N/A' %></p>
-                                                    <p class="text-gray-600"><%= user.emergencyContact.phone %></p>
-                                                </div>
-                                            <% } else { %>
-                                                Not specified
-                                            <% } %>
-                                        </div>
-                                        <div class="edit-field hidden space-y-2">
-                                            <input type="text" name="emergencyContactName" value="<%= user.emergencyContact && user.emergencyContact.name ? user.emergencyContact.name : '' %>" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Contact name">
-                                            <input type="text" name="emergencyContactRelation" value="<%= user.emergencyContact && user.emergencyContact.relation ? user.emergencyContact.relation : '' %>" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Relationship (e.g., Spouse, Parent)">
-                                            <input type="tel" name="emergencyContactPhone" value="<%= user.emergencyContact && user.emergencyContact.phone ? user.emergencyContact.phone : '' %>" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Phone number">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Medical Info (Read-only) -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Medical Information</h3>
-                            <div class="space-y-3 text-sm mb-6">
-                                <div>
-                                    <p class="text-gray-500 mb-2">Medical History:</p>
-                                    <p class="font-medium text-gray-800"><%= user.medicalHistory || 'No medical history recorded' %></p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-500 mb-2">Allergies:</p>
-                                    <% if (user.allergies) { %>
-                                    <div class="flex flex-wrap gap-2">
-                                        <% user.allergies.split(',').forEach(allergy => { %>
-                                            <span class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"><%= allergy.trim() %></span>
-                                        <% }); %>
-                                    </div>
-                                    <% } else { %>
-                                    <p class="font-medium text-gray-400 italic">No allergies recorded</p>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                <% if (user.medicalHistory) { %>
+                <div>
+                  <p class="text-gray-500 mb-2">Medical History:</p>
+                  <p class="text-sm text-gray-700">
+                    <%= user.medicalHistory %>
+                  </p>
+                </div>
+                <% } %> <% if (user.allergies) { %>
+                <div>
+                  <p class="text-gray-500 mb-2">Known Allergies:</p>
+                  <div class="flex flex-wrap gap-2">
+                    <% user.allergies.split(',').forEach(allergy => { %>
+                    <span
+                      class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                      ><%= allergy.trim() %></span
+                    >
+                    <% }); %>
+                  </div>
+                </div>
+                <% } else { %>
+                <div>
+                  <p class="text-gray-500 mb-2">Known Allergies:</p>
+                  <p class="text-sm text-gray-400 italic">
+                    No allergies recorded
+                  </p>
+                </div>
+                <% } %>
+              </div>
             </div>
 
-            <!-- Keep other tab panels (Timeline, Medications, Hospitals, AI Assistant) as they were -->
-            <!-- ... (rest of the tabs remain the same) ... -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+              <div class="flex items-center mb-4">
+                <i
+                  data-lucide="activity"
+                  class="w-6 h-6 text-green-500 mr-3"
+                ></i>
+                <h2 class="text-xl font-semibold text-gray-800">
+                  Current Vitals & Health Metrics
+                </h2>
+              </div>
+              <p class="text-gray-500 text-sm mb-6">
+                Latest recorded measurements with trends
+              </p>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+          </div>
 
-        </main>
+          <div class="mt-6 bg-white p-6 rounded-xl shadow-md"></div>
+        </div>
+
+        <div
+          id="personal-info"
+          class="tab-panel hidden bg-white p-6 rounded-xl shadow-md"
+        >
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+              <i
+                data-lucide="user-circle-2"
+                class="w-6 h-6 text-blue-500 mr-3"
+              ></i>
+              <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                  Personal Information
+                </h2>
+                <p class="text-sm text-gray-500">
+                  Manage your personal details and medical information
+                </p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button
+                id="edit-info-btn"
+                class="bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-gray-700"
+              >
+                <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
+                <span id="edit-btn-text">Edit Info</span>
+              </button>
+              <button
+                id="save-info-btn"
+                class="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-green-700 hidden"
+              >
+                <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Changes
+              </button>
+              <button
+                id="cancel-edit-btn"
+                class="bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center hover:bg-red-700 hidden"
+              >
+                <i data-lucide="x" class="w-4 h-4 mr-2"></i> Cancel
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center mb-8">
+            <div class="relative">
+              <img
+                id="profile-pic"
+                src="<%= user.profilePic || '/images/default-avatar.png' %>"
+                alt="Profile Picture"
+                class="w-28 h-28 rounded-full object-cover border-4 border-blue-500 shadow-md"
+              />
+              <label
+                for="profile-pic-input"
+                class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 hidden edit-field"
+              >
+                <i data-lucide="camera" class="w-4 h-4"></i>
+              </label>
+            </div>
+            <input
+              type="file"
+              id="profile-pic-input"
+              name="profilePic"
+              accept="image/*"
+              class="hidden"
+            />
+            <p class="text-sm text-gray-500 mt-2">
+              Upload a clear profile picture
+            </p>
+          </div>
+
+          <div id="update-message" class="hidden mb-4 p-3 rounded-lg">
+            <div class="flex items-center">
+              <i id="message-icon" class="w-5 h-5 mr-2"></i>
+              <span id="message-text"></span>
+            </div>
+          </div>
+
+          <form id="patient-update-form" enctype="multipart/form-data">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                  Basic Information
+                </h3>
+                <div class="space-y-4 text-sm">
+                  <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Full Name</span>
+                    <span class="col-span-2 font-medium text-gray-800"
+                      ><%= user.name %></span
+                    >
+                  </div>
+                  <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Patient ID</span>
+                    <span class="col-span-2 font-medium text-blue-600"
+                      ><%= user.uid %></span
+                    >
+                  </div>
+                  <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Email</span>
+                    <span class="col-span-2 font-medium text-gray-800"
+                      ><%= user.email %></span
+                    >
+                  </div>
+                  <% if (user.age) { %>
+                  <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Age</span>
+                    <span class="col-span-2 font-medium text-gray-800"
+                      ><%= user.age %> years</span
+                    >
+                  </div>
+                  <% } %> <% if (user.gender) { %>
+                  <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Gender</span>
+                    <span class="col-span-2 font-medium text-gray-800"
+                      ><%= user.gender %></span
+                    >
+                  </div>
+                  <% } %>
+                  <div class="grid grid-cols-3 gap-2 items-center">
+                    <label class="text-gray-500">Blood Group</label>
+                    <div class="col-span-2">
+                        <span class="display-field font-medium text-gray-800"><%= user.bloodGroup || 'Not specified' %></span>
+                        <select name="bloodGroup" class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select Blood Group</option>
+                            <option value="A+" <%= user.bloodGroup === 'A+' ? 'selected' : '' %>>A+</option>
+                            <option value="A-" <%= user.bloodGroup === 'A-' ? 'selected' : '' %>>A-</option>
+                            <option value="B+" <%= user.bloodGroup === 'B+' ? 'selected' : '' %>>B+</option>
+                            <option value="B-" <%= user.bloodGroup === 'B-' ? 'selected' : '' %>>B-</option>
+                            <option value="AB+" <%= user.bloodGroup === 'AB+' ? 'selected' : '' %>>AB+</option>
+                            <option value="AB-" <%= user.bloodGroup === 'AB-' ? 'selected' : '' %>>AB-</option>
+                            <option value="O+" <%= user.bloodGroup === 'O+' ? 'selected' : '' %>>O+</option>
+                            <option value="O-" <%= user.bloodGroup === 'O-' ? 'selected' : '' %>>O-</option>
+                        </select>
+                        </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2 items-center">
+                    <label class="text-gray-500">Phone</label>
+                    <div class="col-span-2">
+                      <span class="display-field font-medium text-gray-800"
+                        ><%= user.phone || 'Not specified' %></span
+                      >
+                      <input
+                        type="tel"
+                        name="phone"
+                        value="<%= user.phone || '' %>"
+                        class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2 items-start">
+                    <label class="text-gray-500 mt-2">Address</label>
+                    <div class="col-span-2">
+                      <span class="display-field font-medium text-gray-800"
+                        ><%= user.address || 'Not specified' %></span
+                      >
+                      <textarea
+                        name="address"
+                        class="edit-field hidden w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20 resize-none"
+                        placeholder="Enter your address"
+                      >
+<%= user.address || '' %></textarea
+                      >
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2 items-start">
+                    <label class="text-gray-500 mt-2">Emergency Contact</label>
+                    <div class="col-span-2">
+                      <div class="display-field font-medium text-gray-800">
+                        <% if (user.emergencyContact &&
+                        user.emergencyContact.phone) { %>
+                        <div class="text-sm">
+                          <p>
+                            <strong
+                              ><%= user.emergencyContact.name || 'N/A'
+                              %></strong
+                            >
+                          </p>
+                          <p class="text-gray-600">
+                            <%= user.emergencyContact.relation || 'N/A' %>
+                          </p>
+                          <p class="text-gray-600">
+                            <%= user.emergencyContact.phone %>
+                          </p>
+                        </div>
+                        <% } else { %> Not specified <% } %>
+                      </div>
+                      <div class="edit-field hidden space-y-2">
+                        <input
+                          type="text"
+                          name="emergencyContactName"
+                          value="<%= user.emergencyContact && user.emergencyContact.name ? user.emergencyContact.name : '' %>"
+                          class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Contact name"
+                        />
+                        <input
+                          type="text"
+                          name="emergencyContactRelation"
+                          value="<%= user.emergencyContact && user.emergencyContact.relation ? user.emergencyContact.relation : '' %>"
+                          class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Relationship (e.g., Spouse, Parent)"
+                        />
+                        <input
+                          type="tel"
+                          name="emergencyContactPhone"
+                          value="<%= user.emergencyContact && user.emergencyContact.phone ? user.emergencyContact.phone : '' %>"
+                          class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Phone number"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                  Medical Information
+                </h3>
+                <div class="space-y-3 text-sm mb-6">
+                  <div>
+                    <p class="text-gray-500 mb-2">Medical History:</p>
+                    <p class="font-medium text-gray-800">
+                      <%= user.medicalHistory || 'No medical history recorded'
+                      %>
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 mb-2">Allergies:</p>
+                    <% if (user.allergies) { %>
+                    <div class="flex flex-wrap gap-2">
+                      <% user.allergies.split(',').forEach(allergy => { %>
+                      <span
+                        class="bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                        ><%= allergy.trim() %></span
+                      >
+                      <% }); %>
+                    </div>
+                    <% } else { %>
+                    <p class="font-medium text-gray-400 italic">
+                      No allergies recorded
+                    </p>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
+      document.addEventListener("DOMContentLoaded", function () {
+        lucide.createIcons();
 
-            const tabs = document.querySelectorAll('#dashboard-tabs a');
-            const panels = document.querySelectorAll('#dashboard-content .tab-panel');
+        const tabs = document.querySelectorAll("#dashboard-tabs a");
+        const panels = document.querySelectorAll(
+          "#dashboard-content .tab-panel"
+        );
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    tabs.forEach(item => {
-                        item.classList.remove('tab-active');
-                        item.classList.add('tab-inactive');
-                    });
-                    panels.forEach(panel => {
-                        panel.classList.add('hidden');
-                    });
-
-                    tab.classList.add('tab-active');
-                    tab.classList.remove('tab-inactive');
-                    
-                    const targetPanelId = tab.getAttribute('data-tab');
-                    const targetPanel = document.getElementById(targetPanelId);
-                    if(targetPanel) {
-                        targetPanel.classList.remove('hidden');
-                    }
-                });
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", (e) => {
+            e.preventDefault();
+            tabs.forEach((item) => {
+              item.classList.remove("tab-active");
+              item.classList.add("tab-inactive");
             });
-
-            // Patient info editing functionality
-            const editBtn = document.getElementById('edit-info-btn');
-            const saveBtn = document.getElementById('save-info-btn');
-            const cancelBtn = document.getElementById('cancel-edit-btn');
-            const form = document.getElementById('patient-update-form');
-            const displayFields = document.querySelectorAll('.display-field');
-            const editFields = document.querySelectorAll('.edit-field');
-            const messageDiv = document.getElementById('update-message');
-            const messageText = document.getElementById('message-text');
-            const messageIcon = document.getElementById('message-icon');
-
-            let isEditing = false;
-            let originalValues = {};
-
-            // Function to show message
-            function showMessage(message, type = 'success') {
-                messageText.textContent = message;
-                messageDiv.className = 'mb-4 p-3 rounded-lg';
-                
-                if (type === 'success') {
-                    messageDiv.classList.add('bg-green-50', 'border', 'border-green-200', 'text-green-800');
-                    messageIcon.setAttribute('data-lucide', 'check-circle');
-                } else {
-                    messageDiv.classList.add('bg-red-50', 'border', 'border-red-200', 'text-red-800');
-                    messageIcon.setAttribute('data-lucide', 'alert-circle');
-                }
-                
-                messageDiv.classList.remove('hidden');
-                lucide.createIcons();
-                
-                // Hide message after 5 seconds
-                setTimeout(() => {
-                    messageDiv.classList.add('hidden');
-                }, 5000);
+            panels.forEach((panel) => {
+              panel.classList.add("hidden");
+            });
+            tab.classList.add("tab-active");
+            tab.classList.remove("tab-inactive");
+            const targetPanelId = tab.getAttribute("data-tab");
+            const targetPanel = document.getElementById(targetPanelId);
+            if (targetPanel) {
+              targetPanel.classList.remove("hidden");
             }
-
-            // Function to toggle edit mode
-            function toggleEditMode(editing) {
-                isEditing = editing;
-                
-                if (editing) {
-                    // Store original values
-                    editFields.forEach(field => {
-                        originalValues[field.name] = field.value;
-                    });
-                    
-                    // Hide display fields and show edit fields
-                    displayFields.forEach(field => field.classList.add('hidden'));
-                    editFields.forEach(field => field.classList.remove('hidden'));
-                    
-                    // Toggle buttons
-                    editBtn.classList.add('hidden');
-                    saveBtn.classList.remove('hidden');
-                    cancelBtn.classList.remove('hidden');
-                } else {
-                    // Show display fields and hide edit fields
-                    displayFields.forEach(field => field.classList.remove('hidden'));
-                    editFields.forEach(field => field.classList.add('hidden'));
-                    
-                    // Toggle buttons
-                    editBtn.classList.remove('hidden');
-                    saveBtn.classList.add('hidden');
-                    cancelBtn.classList.add('hidden');
-                }
-                
-                lucide.createIcons();
-            }
-
-            // Edit button click handler
-            editBtn.addEventListener('click', () => {
-                toggleEditMode(true);
-            });
-
-            // Cancel button click handler
-            cancelBtn.addEventListener('click', () => {
-                // Restore original values
-                editFields.forEach(field => {
-                    field.value = originalValues[field.name] || '';
-                });
-                toggleEditMode(false);
-            });
-
-            // Save button click handler
-            saveBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                
-                const formData = new FormData(form);
-                const updateData = {};
-                
-                // Only include fields that have values
-                for (let [key, value] of formData.entries()) {
-                    if (value && value.trim() !== '') {
-                        updateData[key] = value.trim();
-                    }
-                }
-                
-                try {
-                    // Show loading state
-                    saveBtn.disabled = true;
-                    saveBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Saving...';
-                    lucide.createIcons();
-                    
-                    const response = await fetch('/patient/update', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        credentials: 'include', // Important for cookies
-                        body: JSON.stringify(updateData)
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showMessage(result.message, 'success');
-                        
-                        // Update display fields with new values
-                        displayFields.forEach(field => {
-                            const editField = field.parentElement.querySelector('.edit-field');
-                            if (editField) {
-                                const fieldName = editField.name || (editField.querySelector ? editField.querySelector('input').name : null);
-                                if (fieldName && updateData[fieldName]) {
-                                    field.textContent = updateData[fieldName];
-                                }
-                            }
-                        });
-                        
-                        toggleEditMode(false);
-                        
-                        // Reload page after 2 seconds to show updated data
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
-                    } else {
-                        showMessage(result.message || 'Failed to update profile', 'error');
-                    }
-                } catch (error) {
-                    console.error('Update error:', error);
-                    showMessage('An error occurred while updating your profile', 'error');
-                } finally {
-                    // Restore button state
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Changes';
-                    lucide.createIcons();
-                }
-            });
+          });
         });
+
+        // --- Patient Info Editing Functionality ---
+        const editBtn = document.getElementById("edit-info-btn");
+        const saveBtn = document.getElementById("save-info-btn");
+        const cancelBtn = document.getElementById("cancel-edit-btn");
+        const form = document.getElementById("patient-update-form");
+        const displayFields = document.querySelectorAll(".display-field");
+        const editFields = document.querySelectorAll(".edit-field");
+        const messageDiv = document.getElementById("update-message");
+        const messageText = document.getElementById("message-text");
+        const messageIcon = document.getElementById("message-icon");
+        const profilePicInput = document.getElementById("profile-pic-input");
+        let originalValues = {};
+
+        function showMessage(message, type = "success") {
+          messageText.textContent = message;
+          messageDiv.className = "mb-4 p-3 rounded-lg";
+          if (type === "success") {
+            messageDiv.classList.add(
+              "bg-green-50",
+              "border",
+              "border-green-200",
+              "text-green-800"
+            );
+            messageIcon.setAttribute("data-lucide", "check-circle");
+          } else {
+            messageDiv.classList.add(
+              "bg-red-50",
+              "border",
+              "border-red-200",
+              "text-red-800"
+            );
+            messageIcon.setAttribute("data-lucide", "alert-circle");
+          }
+          messageDiv.classList.remove("hidden");
+          lucide.createIcons();
+          setTimeout(() => {
+            messageDiv.classList.add("hidden");
+          }, 5000);
+        }
+
+        function toggleEditMode(editing) {
+          if (editing) {
+            editFields.forEach((field) => {
+              originalValues[field.name] = field.value;
+            });
+            displayFields.forEach((field) => field.classList.add("hidden"));
+            editFields.forEach((field) => field.classList.remove("hidden"));
+            editBtn.classList.add("hidden");
+            saveBtn.classList.remove("hidden");
+            cancelBtn.classList.remove("hidden");
+          } else {
+            displayFields.forEach((field) => field.classList.remove("hidden"));
+            editFields.forEach((field) => field.classList.add("hidden"));
+            editBtn.classList.remove("hidden");
+            saveBtn.classList.add("hidden");
+            cancelBtn.classList.add("hidden");
+          }
+          lucide.createIcons();
+        }
+
+        editBtn.addEventListener("click", () => toggleEditMode(true));
+
+        cancelBtn.addEventListener("click", () => {
+          editFields.forEach((field) => {
+            field.value = originalValues[field.name] || "";
+          });
+          toggleEditMode(false);
+        });
+
+        saveBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          if (profilePicInput.files[0]) {
+            formData.append("profilePic", profilePicInput.files[0]);
+          }
+
+          saveBtn.disabled = true;
+          saveBtn.innerHTML =
+            '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Saving...';
+          lucide.createIcons();
+
+          try {
+            const response = await fetch("/patient/update", {
+              method: "PUT",
+              body: formData,
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+              showMessage(result.message, "success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            } else {
+              showMessage(
+                result.message || "Failed to update profile",
+                "error"
+              );
+            }
+          } catch (error) {
+            console.error("Update error:", error);
+            showMessage(
+              "An error occurred while updating your profile",
+              "error"
+            );
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML =
+              '<i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Changes';
+            lucide.createIcons();
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>

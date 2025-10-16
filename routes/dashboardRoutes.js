@@ -21,30 +21,7 @@ router.get("/patient", authMiddleware, async (req, res) => {
 
     // Pass all patient data to the view
     res.render("patientDashboard", {
-      user: {
-        // Core patient details
-        id: patient._id,
-        uid: patient.uid,
-        name: patient.name,
-        email: patient.email,
-        dob: patient.dob,
-        gender: patient.gender,
-        role: "patient", // Static role assignment
-
-        // Contact and emergency info
-        bloodGroup: patient.bloodGroup,
-        address: patient.address,
-        phone: patient.phone,
-        emergencyContact: patient.emergencyContact,
-
-        // Comprehensive health information
-        medicalHistory: patient.medicalHistory,
-        currentHealth: patient.currentHealth,
-        diagnostics: patient.diagnostics,
-
-        // Admin-controlled information
-        admin: patient.admin,
-      },
+      user: patient,
     });
   } catch (error) {
     console.error("Error loading patient dashboard:", error);

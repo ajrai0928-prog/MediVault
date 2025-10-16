@@ -1,6 +1,7 @@
 const Patient = require("../models/Patient");
+const cloudinary = require("../config/cloudinary");
 
-async function updatePatientInfo (req, res) {
+async function updatePatientInfo(req, res) {
   try {
     // Only patients are allowed
     if (req.user.role !== "patient") {
@@ -10,19 +11,40 @@ async function updatePatientInfo (req, res) {
     const patientId = req.user.id;
 
     // Allowed fields only
-    const { bloodGroup, address, phone, emergencyContactName, emergencyContactRelation, emergencyContactPhone } = req.body;
+    const {
+      bloodGroup,
+      address,
+      phone,
+      emergencyContactName,
+      emergencyContactRelation,
+      emergencyContactPhone,
+    } = req.body;
 
     const updateFields = {};
     if (bloodGroup) updateFields.bloodGroup = bloodGroup;
     if (address) updateFields.address = address;
     if (phone) updateFields.phone = phone;
-    
+
     // Handle emergency contact as an object
-    if (emergencyContactName || emergencyContactRelation || emergencyContactPhone) {
+    if (
+      emergencyContactName ||
+      emergencyContactRelation ||
+      emergencyContactPhone
+    ) {
       updateFields.emergencyContact = {};
-      if (emergencyContactName) updateFields.emergencyContact.name = emergencyContactName;
-      if (emergencyContactRelation) updateFields.emergencyContact.relation = emergencyContactRelation;
-      if (emergencyContactPhone) updateFields.emergencyContact.phone = emergencyContactPhone;
+      if (emergencyContactName)
+        updateFields.emergencyContact.name = emergencyContactName;
+      if (emergencyContactRelation)
+        updateFields.emergencyContact.relation = emergencyContactRelation;
+      if (emergencyContactPhone)
+        updateFields.emergencyContact.phone = emergencyContactPhone;
+    }
+
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "patients/profile_pics",
+      });
+      updateFields.profilePic = uploadResult.secure_url;
     }
 
     const updatedPatient = await Patient.findByIdAndUpdate(
@@ -41,8 +63,10 @@ async function updatePatientInfo (req, res) {
     });
   } catch (error) {
     console.error("Update error:", error);
-    res.status(500).json({ message: "Error updating profile", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating profile", error: error.message });
   }
-};
+}
 
-module.exports = {updatePatientInfo};
+module.exports = { updatePatientInfo };
