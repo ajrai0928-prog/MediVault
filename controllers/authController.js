@@ -40,24 +40,20 @@ const generateUID = async (role, Model) => {
 // Signup Controller
 async function signup(req, res) {
   try {
-    console.log("Signup request body:", req.body); // Debug log
-
     const { role, name, email, password, dob, gender } = req.body;
 
     // Validate role
     if (!role || !["patient", "doctor", "hospital"].includes(role)) {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid role. Must be patient, doctor, or hospital",
-        });
+      return res.status(400).render("signup", {
+        message: "Invalid role. Must be patient, doctor, or hospital",
+      });
     }
 
     // Validate required fields
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Name, email, and password are required" });
+      return res.status(400).render("signup", {
+        message: "Name, email, and password are required",
+      });
     }
 
     // Select the correct model based on role
@@ -69,7 +65,7 @@ async function signup(req, res) {
     if (existingUser) {
       return res
         .status(400)
-        .json({ message: "User with this email already exists" });
+        .render("signup", { message: "User with this email already exists" });
     }
 
     // Generate unique UID
@@ -79,11 +75,9 @@ async function signup(req, res) {
 
     if (role === "patient") {
       if (!dob || !gender) {
-        return res
-          .status(400)
-          .json({
-            message: "DOB, and gender are required for patients",
-          });
+        return res.status(400).render("signup", {
+          message: "DOB, and gender are required for patients",
+        });
       }
       userData = { ...userData, dob, gender };
     }
@@ -111,10 +105,9 @@ async function signup(req, res) {
     res.status(201).redirect(`/dashboard/${role}`);
   } catch (error) {
     console.error("Signup error:", error);
-    res.status(500).json({
+    res.status(500).render("error", {
       message: "Error signing up",
       error: error.message,
-      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 }
@@ -123,6 +116,11 @@ async function signup(req, res) {
 
 async function login(req, res) {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(401).render("login", {
+      error: "invalid Credentials",
+    });
+  }
 
   try {
     let user =
@@ -131,13 +129,17 @@ async function login(req, res) {
       (await Hospital.findOne({ email }));
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).render("login", {
+        error: "User Not Found",
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password); // input pass and that found user pass
     if (!isMatch) {
       // if pass is wrong, doesnot match
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).render("login", {
+        error: "invalid Credentials",
+      });
     }
 
     const role = user.constructor.modelName.toLowerCase();
@@ -157,7 +159,9 @@ async function login(req, res) {
     res.redirect(`/dashboard/${role}`);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).render("error", {
+      message: "Internal Server Error. Please Try Again",
+    });
   }
 }
 
