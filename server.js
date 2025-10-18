@@ -4,7 +4,7 @@ const dotenv = require('dotenv').config();
 const path = require("path");
 const cookieParser = require('cookie-parser');
 
-const { connectToMongoDB } = require('./connect');
+const { connectToMongoDB } = require('./config/connect');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const patientRoute = require('./routes/patientRoute');
