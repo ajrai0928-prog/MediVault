@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const path = require("path");
 const cookieParser = require('cookie-parser');
 
@@ -9,7 +9,6 @@ const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const patientRoute = require('./routes/patientRoute');
 
-dotenv.config();
 const app = express();
 
 
