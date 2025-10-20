@@ -24,6 +24,7 @@ app.set("views", path.resolve("./views"));
 app.use(express.json());  // Express built-in middleware to parse JSON
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser()); // to parse cookies
+app.use(express.static('public'));
 
 // auth routes -> jitne bhi req /auth k baad aegi vo authRoutes handle krega
 app.use("/auth", authRoutes);
