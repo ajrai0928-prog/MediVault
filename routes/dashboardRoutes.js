@@ -44,17 +44,7 @@ router.get("/doctor", authMiddleware, async (req, res) => {
 
     // Pass all doctor data to the view
     res.render("doctorDashboard", {
-      user: {
-        id: doctor._id,
-        name: doctor.name,
-        email: doctor.email,
-        uid: doctor.uid,
-        specialization: doctor.specialization,
-        licenseNumber: doctor.licenseNumber,
-        experience: doctor.experience,
-        hospital: doctor.hospital,
-        role: "doctor",
-      },
+      user: doctor,
     });
   } catch (error) {
     console.error("Error loading doctor dashboard:", error);

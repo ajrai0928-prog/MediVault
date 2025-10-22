@@ -676,6 +676,57 @@
                     </div>
                   </div>
                 </div>
+
+                <div id="doctor-specific-fields" class="hidden">
+                  <div class="space-y-4 mt-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <input
+                          type="text"
+                          onfocus="(this.type='date')"
+                          onblur="(this.type === 'date' && !this.value) ? this.type='text' : ''"
+                          id="doc-dob"
+                          name="dob"
+                          class="w-full p-3 rounded-lg form-input text-sm"
+                          placeholder="Date of Birth"
+                        />
+                      </div>
+                      <div>
+                        <select
+                          id="doc-gender"
+                          name="gender"
+                          class="w-full p-3 rounded-lg form-input text-sm"
+                        >
+                          <option value="" disabled selected>Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div class="sm:col-span-2">
+                        <input
+                          type="text"
+                          id="specialization"
+                          name="specialization"
+                          class="w-full p-3 rounded-lg form-input text-sm"
+                          placeholder="Specialization"
+                          required
+                        />
+                      </div>
+                      <div class="sm:col-span-2">
+                        <input
+                          type="text"
+                          id="licenseNumber"
+                          name="licenseNumber"
+                          class="w-full p-3 rounded-lg form-input text-sm"
+                          placeholder="License Number"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <input
                     type="password"
@@ -744,12 +795,18 @@
       const canvas = document.getElementById("plexus-bg");
       const ctx = canvas.getContext("2d");
 
-      // CHANGE 3: Get patient-specific fields container and inputs
+      // Get patient-specific fields container and inputs
       const patientSpecificFields = document.getElementById(
         "patient-specific-fields"
       );
       const patientInputs =
         patientSpecificFields.querySelectorAll("input, select");
+
+      const doctorSpecificFields = document.getElementById(
+        "doctor-specific-fields"
+      );
+      const doctorInputs =
+        doctorSpecificFields.querySelectorAll("input, select");
 
       roleCards.forEach((card) => {
         card.addEventListener("click", () => {
@@ -759,15 +816,54 @@
           const selectedRole = card.getAttribute("data-role");
           roleSelect.value = selectedRole;
 
-          // CHANGE 4: Logic to show/hide patient fields and toggle requirement
+          patientSpecificFields.classList.add("hidden");
+          patientInputs.forEach((input) => {
+            input.required = false;
+            input.disabled = true;
+            if (input.type !== "select-one") {
+              input.value = "";
+            } else {
+              input.selectedIndex = 0;
+            }
+            // check for the date input
+            if (input.name === "dob" && input.type === "date") {
+              input.type = "text";
+            }
+          });
+
+          doctorSpecificFields.classList.add("hidden");
+          doctorInputs.forEach((input) => {
+            input.required = false;
+            input.disabled = true;
+            if (input.type !== "select-one") {
+              input.value = "";
+            } else {
+              input.selectedIndex = 0;
+            }
+            // check for the date input
+            if (input.name === "dob" && input.type === "date") {
+              input.type = "text";
+            }
+          });
+
+          // Show fields based on selected role
           if (selectedRole === "patient") {
             patientSpecificFields.classList.remove("hidden");
             patientInputs.forEach((input) => {
-              input.required = true;
+              if (
+                input.name !== "specialization" &&
+                input.name !== "licenseNumber"
+              ) {
+                input.required = true;
+              }
+              input.disabled = false;
             });
-          } else {
-            patientSpecificFields.classList.add("hidden");
-            patientInputs.forEach((input) => (input.required = false));
+          } else if (selectedRole === "doctor") {
+            doctorSpecificFields.classList.remove("hidden");
+            doctorInputs.forEach((input) => {
+              input.required = true;
+              input.disabled = false;
+            });
           }
 
           signupFormContainer.classList.add("show");

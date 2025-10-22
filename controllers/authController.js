@@ -73,13 +73,24 @@ async function signup(req, res) {
 
     let userData = { name, email, password, uid };
 
-    if (role === "patient") {
+    if (role === "patient" || role === "doctor") {
       if (!dob || !gender) {
         return res.status(400).render("signup", {
-          message: "DOB, and gender are required for patients",
+          message: "DOB and gender are required for patients and doctors",
         });
       }
       userData = { ...userData, dob, gender };
+
+      if (role === "doctor") {
+        const { specialization, licenseNumber } = req.body;
+        if (!specialization || !licenseNumber) {
+          return res.status(400).render("signup", {
+            message:
+              "Specialization and License Number are required for doctors",
+          });
+        }
+        userData = { ...userData, specialization, licenseNumber };
+      }
     }
 
     // Create new user with generated UID
